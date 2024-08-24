@@ -1,7 +1,8 @@
 import json
 
 DATA_FILE = 'data.json'  # dictionary of manually entered movies
-# DATA_FILE = "data2.json"  # parcing result of imdb top 250 movies
+# DATA_FILE = "data2.json"  # parsing result of imdb top 250 movies
+
 
 def list_movies():
     """Returns a dictionary of dictionaries that
@@ -24,7 +25,7 @@ def update_database(database):
 
 
 def add_movie(title, year, rating):
-    """Adds a movie to the movies database.
+    """Adds a movie to the movies' database.
     Loads the information from the JSON file, add the movie,
     and saves it.
     """
@@ -35,7 +36,7 @@ def add_movie(title, year, rating):
 
 
 def delete_movie(title):
-    """Deletes a movie from the movies database.
+    """Deletes a movie from the movies' database.
     Loads the information from the JSON file, deletes the movie,
     and saves it.
     """
@@ -45,7 +46,7 @@ def delete_movie(title):
 
 
 def update_movie(title, rating):
-    """Updates a movie from the movies database.
+    """Updates a movie from the movies' database.
     Loads the information from the JSON file, updates the movie,
     and saves it.
     """

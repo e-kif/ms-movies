@@ -1,10 +1,11 @@
-from istorage import IStorage
 import json
+from istorage import IStorage
 
 
 class StorageJson(IStorage):
 
     def __init__(self, filepath):
+        """Instance initialization"""
         self._data_file = filepath
 
     def list_movies(self):
@@ -18,7 +19,7 @@ class StorageJson(IStorage):
             return json.loads(database_file.read())
 
     def update_database(self, database):
-        """Function rewrites database JSON file
+        """Rewrites database JSON file
         :param database: dictionary
         :return: None
         """

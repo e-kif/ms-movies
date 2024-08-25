@@ -11,9 +11,11 @@ class MovieApp:
     max_rating = 10
 
     def __init__(self, storage):
+        """Instance initialization"""
         self._storage = storage
 
     def _command_list_movies(self):
+        """Prints all movies from instance storage"""
         movies = self._storage.list_movies()
         try:
             print(f'{len(movies)} movies in total: {self.movie_string(self._storage.list_movies().keys())}')
@@ -21,7 +23,7 @@ class MovieApp:
             print('Movies database is empty!')
 
     def movie_string(self, title):
-        """Function takes a movie title and returns a string with info
+        """Takes a movie title and returns a string with info
         about movie or a multistring with info about movies
         :param title: movie title as a string,
         list of movie titles or a dictionary key with movie titles
@@ -45,7 +47,7 @@ class MovieApp:
 
     @staticmethod
     def get_title(custom_string=""):
-        """Function gets movie title from user input
+        """Gets movie title from user input
         :param custom_string: additional string for user input
         :return: string
         """
@@ -60,7 +62,7 @@ class MovieApp:
 
     @staticmethod
     def get_poster(title):
-        """Function gets movie poster from user input
+        """Gets movie poster from user input
         :return: string
         """
         while True:
@@ -72,7 +74,7 @@ class MovieApp:
 
     @staticmethod
     def get_year():
-        """Function asks user for a movie year as an input, validates the user input
+        """Asks user for a movie year as an input, validates the user input
         :return: integer
         """
         while True:
@@ -86,7 +88,7 @@ class MovieApp:
 
     @staticmethod
     def get_rating():
-        """Function asks user to input a rating for a movie and validates the input
+        """Åsks user to input a rating for a movie and validates the input
         :return: float
         """
         while True:
@@ -99,7 +101,7 @@ class MovieApp:
                 print(f'Expected a number between {MovieApp.min_rating} and {MovieApp.max_rating}')
 
     def add_movie(self):
-        """Function adds new movie to a 'database'
+        """Adds new movie to a database storage
         :return: None
         """
         title = MovieApp.get_title()
@@ -109,7 +111,7 @@ class MovieApp:
         self._storage.add_movie(title, year, rating, poster)
 
     def delete_movie(self):
-        """Function deletes a movie from a 'database'
+        """Deletes a movie from a storage database
         :return: None
         """
         while True:
@@ -122,7 +124,7 @@ class MovieApp:
                 print(f'There is no movie called "{title}" in a database')
 
     def update_movie(self):
-        """Function updates movie year and rating for a specific movie
+        """Updates movie year and rating for a specific movie
         :return: None
         """
         while True:
@@ -139,7 +141,7 @@ class MovieApp:
             break
 
     def _command_movie_stats(self):
-        """Function prints statistics of movies database
+        """Prints statistics of storage database movies
             :return: None
             """
         data = self._storage.list_movies()
@@ -165,7 +167,7 @@ class MovieApp:
         print(f'The worst movie(s): {self.movie_string(worst_movies)}')
 
     def print_random_movie(self):
-        """Function selects random movie from a database and prints it
+        """Selects random movie from a storage database and prints it
         :return: None
         """
         data = self._storage.list_movies()
@@ -175,7 +177,7 @@ class MovieApp:
         print(f"Your movie for tonight: {random_title}, it's rated {rating}")
 
     def search_movie(self):
-        """Function searches movies matching user input criteria
+        """Searches movies matching user input criteria
         :return: None
         """
         data = self._storage.list_movies()
@@ -192,7 +194,7 @@ class MovieApp:
             print(f'List of found movies:{self.movie_string(found_movies)}')
 
     def print_sorted_by_rating(self):
-        """Function prints all movies from a database sorted by theirs rating
+        """Prints all movies from a database sorted by theirs rating
         :return: None
         """
         data = self._storage.list_movies()
@@ -203,7 +205,7 @@ class MovieApp:
         print(f'Movies sorted by rating: {self.movie_string(titles)}')
 
     def print_sorted_by_year(self):
-        """Function prints all movies from a database sorted by release year
+        """Prints all movies from a storage database by release year
         :return: None
         """
         data = self._storage.list_movies()
@@ -221,7 +223,7 @@ class MovieApp:
 
     @staticmethod
     def movie_filters_range(extreme):
-        """Function gets a minimum or maximum rating for movies filter
+        """Gets a minimum or maximum rating for movies filter
         :param extreme: string ('minimum' or 'maximum')
         :return: float
         """
@@ -244,7 +246,7 @@ class MovieApp:
 
     @staticmethod
     def movie_filters_year(extreme):
-        """Function gets a start or end year for movies filter
+        """Gets a start or end year for movies filter
         :param extreme: string ('start' or 'end')
         :return: integer
         """
@@ -265,7 +267,7 @@ class MovieApp:
                 print('Excepted a positive integer')
 
     def filter_movies(self):
-        """Function asks user to enter minimum, maximum rating, start and end year.
+        """Asks user to enter minimum, maximum rating, start and end year.
         Prints lis of movies, matching entered criteria.
         :return: None
         """
@@ -289,14 +291,14 @@ class MovieApp:
 
     @staticmethod
     def print_header(text='My Movies Database'):
-        """Function prints header of the program
+        """Prints header of the program
         :return: None
         """
         print('*' * 5, text, '*' * 5)
 
     @staticmethod
     def print_menu():
-        """Function prints user menu
+        """Prints user menu
         :return: None
         """
         menu_items = []
@@ -330,13 +332,11 @@ class MovieApp:
             continue
 
     def _generate_website(self):
+        """Generates static html file from html template"""
         pass
 
     def run(self):
-        # print menu
-        # get use command
-        # execute command
-        """Function populates function_list dictionary and calls dispatcher function
+        """Populates function_list dictionary and calls dispatcher function
             :return: None
             """
         MovieApp.function_list['0. Exit'] = "exit_loop"

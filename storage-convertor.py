@@ -34,3 +34,7 @@ class StorageConvertor:
         with open(json_file, 'w') as handle:
             handle.write(json.dumps(self._storage))
         print(f'Movies database was saved to file {json_file} successfully.')
+
+
+sor = StorageConvertor('data.json')
+sor.save_database_as_csv('data.csv')

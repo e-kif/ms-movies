@@ -332,9 +332,35 @@ class MovieApp:
             input('\nPress "Enter" to continue')
             continue
 
+    @staticmethod
+    def html_tag_wrap(content, tag="div", class_=""):
+        if class_:
+            class_ = f'class="{class_}"'
+        if tag == 'img':
+            return f'<{tag} {class_} src="{content}" alt="movie-poster">'
+
+        return f'<{tag} {class_}>{content}</{tag}>'
+
+    @staticmethod
+    def serialize_movie(title, year, rating, poster):
+        img = MovieApp.html_tag_wrap(poster, "img", "movie-poster")
+        movie_title = MovieApp.html_tag_wrap(title, "div", "movie-title")
+        release_year = MovieApp.html_tag_wrap(year, "div", "movie-year")
+        movie_html = MovieApp.html_tag_wrap(img + movie_title + release_year, "div", "movie")
+        return MovieApp.html_tag_wrap(movie_html, "li")
+
     def _generate_website(self):
         """Generates static html file from html template"""
-        pass
+        movies = self._storage.list_movies()
+        movies_html_list_items = ""
+        for title, info in movies.items():
+            movies_html_list_items += MovieApp.serialize_movie(title, info['year'], info['rating'], info['poster'])
+        with open("_static/index_template.html", 'r') as handle:
+            html_template = handle.read()
+        with open('_static/index.html', 'w') as handle:
+            handle.write(html_template.replace("__TEMPLATE_MOVIE_GRID__", movies_html_list_items)
+                         .replace('__TEMPLATE_TITLE__', 'My Movie App'))
+        print('Movie website was generated successfully.')
 
     def run(self):
         """Populates function_list dictionary and calls dispatcher function
@@ -351,4 +377,5 @@ class MovieApp:
         MovieApp.function_list['8. Movies sorted by rating'] = self.print_sorted_by_rating
         MovieApp.function_list['9. Movies sorted by year'] = self.print_sorted_by_year
         MovieApp.function_list['10. Filter movies'] = self.filter_movies
+        MovieApp.function_list['11. Generate a website'] = self._generate_website
         MovieApp.dispatcher()

@@ -3,6 +3,7 @@ from istorage import IStorage
 
 
 class StorageJson(IStorage):
+    """Storage class for dealing with json files storage"""
 
     def __init__(self, filepath):
         """Instance initialization"""

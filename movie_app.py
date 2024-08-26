@@ -5,6 +5,7 @@ import random
 
 
 class MovieApp:
+    """Main MovieApp clas responsible for user interaction"""
 
     function_list = {}
     min_rating = 0
@@ -61,12 +62,12 @@ class MovieApp:
             return user_input
 
     @staticmethod
-    def get_poster(title):
+    def get_poster():
         """Gets movie poster from user input
         :return: string
         """
         while True:
-            user_input = input(f'Enter a link for the poster of the movie {title}: ').strip()
+            user_input = input(f'Enter a link for the poster: ').strip()
             if not user_input:
                 print('Movie poster can not be empty')
                 continue
@@ -107,7 +108,7 @@ class MovieApp:
         title = MovieApp.get_title()
         year = MovieApp.get_year()
         rating = MovieApp.get_rating()
-        poster = MovieApp.get_poster(title)
+        poster = MovieApp.get_poster()
         self._storage.add_movie(title, year, rating, poster)
 
     def delete_movie(self):

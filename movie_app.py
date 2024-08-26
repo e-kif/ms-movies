@@ -2,11 +2,14 @@ import json
 import statistics
 import datetime
 import random
+import requests
+import dotenv
 
 
 class MovieApp:
     """Main MovieApp clas responsible for user interaction"""
 
+    api_key = dotenv.get_key('.env', 'API_KEY')
     function_list = {}
     min_rating = 0
     max_rating = 10
@@ -361,6 +364,23 @@ class MovieApp:
             handle.write(html_template.replace("__TEMPLATE_MOVIE_GRID__", movies_html_list_items)
                          .replace('__TEMPLATE_TITLE__', 'My Movie App'))
         print('Movie website was generated successfully.')
+
+    def update_movies_info(self):
+        new_movies = {}
+        for title in self._storage.list_movies().keys():
+            url = "http://www.omdbapi.com/?apikey=" + MovieApp.api_key + "&t=" + title
+            response = requests.get(url).json()
+            print(title)
+            print(response)
+            year = response['Year']
+            poster = response['Poster']
+            rating = response['imdbRating']
+            new_movies[title] = {'year': year,
+                                 'rating': rating,
+                                 'poster': poster}
+        self._storage.update_database(new_movies)
+        with open('new_movies.json', 'w') as handle:
+            handle.write(json.dumps(new_movies))
 
     def run(self):
         """Populates function_list dictionary and calls dispatcher function

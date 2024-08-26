@@ -6,13 +6,14 @@ class StorageConvertor:
 
     def __init__(self, datafile):
         with open(datafile, 'r') as handle:
-            try:
+            if datafile.endswith(".json"):
                 self._storage = json.loads(handle.read())
-            except json.JSONDecodeError:
+            else:
                 handle.readline()
-                reader = csv.reader(handle.read())
+                reader = csv.reader(handle)
                 self._storage = {}
                 for line in reader:
+                    print(line)
                     title, year, rating, poster = tuple(line)
                     year = int(year)
                     rating = float(rating)
@@ -36,5 +37,6 @@ class StorageConvertor:
         print(f'Movies database was saved to file {json_file} successfully.')
 
 
-sor = StorageConvertor('data.json')
-sor.save_database_as_csv('data.csv')
+sor = StorageConvertor('data.csv')
+# sor.save_database_as_csv('data.csv')
+sor.save_database_as_json('data2.json')

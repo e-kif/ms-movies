@@ -18,12 +18,17 @@ body {
   margin: 0;
   margin-top: 20px;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
 }
 
 .movie-grid li {
   padding: 10px 15px;
   text-align: left;
+}
+
+.movie-grid li:hover .movie-poster {
+  transform: scale(1.06);
 }
 
 .movie {
@@ -49,4 +54,6 @@ body {
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
     width: 128px;
     height: 193px;
+    transition: all .4s ease;
+    cursor: pointer
 }

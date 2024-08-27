@@ -1,5 +1,5 @@
 import csv
-from istorage import IStorage
+from storage.istorage import IStorage
 
 
 class StorageCsv(IStorage):
@@ -36,29 +36,4 @@ class StorageCsv(IStorage):
             for title, info in database.items():
                 handle.write(f'\n"{title}",{info["year"]},{info["rating"]},"{info["poster"]}"')
 
-    def add_movie(self, title, year, rating, poster):
-        """Reads movies database, adds one movie, saves new database to a csv file
-        :param title: str, movie title
-        :param year: int, movie release year
-        :param rating: float, movie rating
-        :param poster: str, URL for movie poster
-        :return: None
-        """
-        movies = self.list_movies()
-        movies[title] = {"year": year,
-                         "rating": rating,
-                         "poster": poster}
-        self.update_database(movies)
-        print(f'Movie "{title}" was added to the movies database.')
 
-    def delete_movie(self, title):
-        """Removes a movie from a database based on a given movie title"""
-        movies = self.list_movies()
-        del movies[title]
-        self.update_database(movies)
-
-    def update_movie(self, title, rating):
-        """Updates movie's rating"""
-        movies = self.list_movies()
-        movies[title]['rating'] = rating
-        self.update_database(movies)

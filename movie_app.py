@@ -92,7 +92,7 @@ class MovieApp:
 
     @staticmethod
     def get_rating():
-        """Åsks user to input a rating for a movie and validates the input
+        """Asks user to input a rating for a movie and validates the input
         :return: float
         """
         while True:
@@ -110,7 +110,6 @@ class MovieApp:
         if movie_info:
             title, year, rating, poster = movie_info
             self._storage.add_movie(title, year, rating, poster)
-            print(f'Movie "{title}" was added successfully')
 
     def _delete_movie(self):
         """Deletes a movie from a storage database
@@ -293,16 +292,12 @@ class MovieApp:
 
     @staticmethod
     def print_header(text='My Movies Database'):
-        """Prints header of the program
-        :return: None
-        """
+        """Prints header of the program"""
         print('*' * 5, text, '*' * 5)
 
     @staticmethod
     def print_menu():
-        """Prints user menu
-        :return: None
-        """
+        """Prints user menu"""
         menu_items = []
         print('\nMenu:')
         for item in MovieApp.function_list:
@@ -335,6 +330,7 @@ class MovieApp:
 
     @staticmethod
     def html_tag_wrap(content, tag="div", class_=""):
+        """Wraps the content into given HTML tag with given CSS class"""
         if class_:
             class_ = f'class="{class_}"'
         if tag == 'img':
@@ -344,6 +340,7 @@ class MovieApp:
 
     @staticmethod
     def serialize_movie(title, year, rating, poster):
+        """Serializes one movie, returns valid HTML markup for one move (list item)"""
         img = MovieApp.html_tag_wrap(poster, "img", "movie-poster")
         movie_title = MovieApp.html_tag_wrap(title, "div", "movie-title")
         release_year = MovieApp.html_tag_wrap(year, "div", "movie-year")
@@ -364,6 +361,7 @@ class MovieApp:
         print('Movie website was generated successfully.')
 
     def _update_movies_info(self):
+        """Goes through each movie title and updates all other info from API"""
         new_movies = {}
         for title in self._storage.list_movies().keys():
             url = "http://www.omdbapi.com/?apikey=" + MovieApp.api_key + "&t=" + title
@@ -383,14 +381,14 @@ class MovieApp:
     @staticmethod
     def get_movie_info():
         """Asks user of movie title, gets movie's info from api. If connection error asks user for movie info
-        :return:
+        :return: tuple (title, year, rating, poster)
         """
         while True:
             title = MovieApp.get_title()
             url = "http://www.omdbapi.com/?apikey=" + MovieApp.api_key + "&t=" + title
             try:
                 response = requests.get(url).json()
-            except MaxRetryError:
+            except requests.exceptions.ConnectionError:
                 print('Houston, we have some connection problems! There is no Internet connection.')
                 try_again = input('Do you want to try again? y/N: ').strip().lower()
                 if try_again in ['yes', 'y']:

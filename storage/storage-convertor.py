@@ -3,8 +3,10 @@ import csv
 
 
 class StorageConvertor:
+    """Class for storage convertor JSON -> CSV and CSV -> JSON"""
 
     def __init__(self, datafile):
+        """Instance initialization. Reads datafile and converts it to dict"""
         with open(datafile, 'r') as handle:
             if datafile.endswith(".json"):
                 self._storage = json.loads(handle.read())
@@ -21,6 +23,7 @@ class StorageConvertor:
                                             "poster": poster}
 
     def save_database_as_csv(self, csv_file):
+        """Saves database as a valid JSON file"""
         with open(csv_file, 'w') as handle:
             handle.write('"title","year","rating","poster"')
             for title, info in self._storage.items():
@@ -31,6 +34,7 @@ class StorageConvertor:
         print(f'Movies database was save to file {csv_file} successfully.')
 
     def save_database_as_json(self, json_file):
+        """Saves database as a valid JSON file"""
         with open(json_file, 'w') as handle:
             handle.write(json.dumps(self._storage))
         print(f'Movies database was saved to file {json_file} successfully.')

@@ -13,7 +13,6 @@ class StorageConvertor:
                 reader = csv.reader(handle)
                 self._storage = {}
                 for line in reader:
-                    print(line)
                     title, year, rating, poster = tuple(line)
                     year = int(year)
                     rating = float(rating)

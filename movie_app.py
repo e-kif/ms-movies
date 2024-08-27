@@ -22,11 +22,11 @@ class MovieApp:
         """Prints all movies from instance storage"""
         movies = self._storage.list_movies()
         try:
-            print(f'{len(movies)} movies in total: {self.movie_string(self._storage.list_movies().keys())}')
+            print(f'{len(movies)} movies in total: {self._movie_string(self._storage.list_movies().keys())}')
         except json.decoder.JSONDecodeError:
             print('Movies database is empty!')
 
-    def movie_string(self, title):
+    def _movie_string(self, title):
         """Takes a movie title and returns a string with info
         about movie or a multistring with info about movies
         :param title: movie title as a string,
@@ -104,17 +104,15 @@ class MovieApp:
             except ValueError:
                 print(f'Expected a number between {MovieApp.min_rating} and {MovieApp.max_rating}')
 
-    def add_movie(self):
-        """Adds new movie to a database storage
-        :return: None
-        """
-        title = MovieApp.get_title()
-        year = MovieApp.get_year()
-        rating = MovieApp.get_rating()
-        poster = MovieApp.get_poster()
-        self._storage.add_movie(title, year, rating, poster)
+    def _add_movie(self):
+        """Adds new movie to a database storage"""
+        movie_info = MovieApp.get_movie_info()
+        if movie_info:
+            title, year, rating, poster = movie_info
+            self._storage.add_movie(title, year, rating, poster)
+            print(f'Movie "{title}" was added successfully')
 
-    def delete_movie(self):
+    def _delete_movie(self):
         """Deletes a movie from a storage database
         :return: None
         """
@@ -127,7 +125,7 @@ class MovieApp:
             except KeyError:
                 print(f'There is no movie called "{title}" in a database')
 
-    def update_movie(self):
+    def _update_movie(self):
         """Updates movie year and rating for a specific movie
         :return: None
         """
@@ -167,10 +165,10 @@ class MovieApp:
         print('Statistics about the movies in the database:')
         print(f'Average rating: {average}')
         print(f'Median rating: {median}')
-        print(f'The best movie(s): {self.movie_string(best_movies)}')
-        print(f'The worst movie(s): {self.movie_string(worst_movies)}')
+        print(f'The best movie(s): {self._movie_string(best_movies)}')
+        print(f'The worst movie(s): {self._movie_string(worst_movies)}')
 
-    def print_random_movie(self):
+    def _print_random_movie(self):
         """Selects random movie from a storage database and prints it
         :return: None
         """
@@ -180,7 +178,7 @@ class MovieApp:
         rating = data[random_title]['rating']
         print(f"Your movie for tonight: {random_title}, it's rated {rating}")
 
-    def search_movie(self):
+    def _search_movie(self):
         """Searches movies matching user input criteria
         :return: None
         """
@@ -193,11 +191,11 @@ class MovieApp:
         if not found_movies:
             print('There are no movies matching your request.')
         elif len(found_movies) == 1:
-            print(f'One movie found matching your request: {self.movie_string(found_movies)}')
+            print(f'One movie found matching your request: {self._movie_string(found_movies)}')
         else:
-            print(f'List of found movies:{self.movie_string(found_movies)}')
+            print(f'List of found movies:{self._movie_string(found_movies)}')
 
-    def print_sorted_by_rating(self):
+    def _print_sorted_by_rating(self):
         """Prints all movies from a database sorted by theirs rating
         :return: None
         """
@@ -206,9 +204,9 @@ class MovieApp:
         titles = []
         for movie in movies_list:
             titles.append(movie[0])
-        print(f'Movies sorted by rating: {self.movie_string(titles)}')
+        print(f'Movies sorted by rating: {self._movie_string(titles)}')
 
-    def print_sorted_by_year(self):
+    def _print_sorted_by_year(self):
         """Prints all movies from a storage database by release year
         :return: None
         """
@@ -223,7 +221,7 @@ class MovieApp:
         titles = []
         for movie in movies_list:
             titles.append(movie[0])
-        print(f'Movies sorted by year: {self.movie_string(titles)}')
+        print(f'Movies sorted by year: {self._movie_string(titles)}')
 
     @staticmethod
     def movie_filters_range(extreme):
@@ -270,7 +268,7 @@ class MovieApp:
             except ValueError:
                 print('Excepted a positive integer')
 
-    def filter_movies(self):
+    def _filter_movies(self):
         """Asks user to enter minimum, maximum rating, start and end year.
         Prints lis of movies, matching entered criteria.
         :return: None
@@ -291,7 +289,7 @@ class MovieApp:
             print('No movies matching your filter')
         else:
             print('Filtered movies:')
-            print(self.movie_string(filtered_movies))
+            print(self._movie_string(filtered_movies))
 
     @staticmethod
     def print_header(text='My Movies Database'):
@@ -365,13 +363,12 @@ class MovieApp:
                          .replace('__TEMPLATE_TITLE__', 'My Movie App'))
         print('Movie website was generated successfully.')
 
-    def update_movies_info(self):
+    def _update_movies_info(self):
         new_movies = {}
         for title in self._storage.list_movies().keys():
             url = "http://www.omdbapi.com/?apikey=" + MovieApp.api_key + "&t=" + title
             response = requests.get(url).json()
-            print(title)
-            print(response)
+            print(f'Updating movie "{title}" info.')
             year = response['Year']
             poster = response['Poster']
             rating = response['imdbRating']
@@ -381,6 +378,34 @@ class MovieApp:
         self._storage.update_database(new_movies)
         with open('new_movies.json', 'w') as handle:
             handle.write(json.dumps(new_movies))
+        print("All movies' info was updated successfully")
+
+    @staticmethod
+    def get_movie_info():
+        """Asks user of movie title, gets movie's info from api. If connection error asks user for movie info
+        :return:
+        """
+        while True:
+            title = MovieApp.get_title()
+            url = "http://www.omdbapi.com/?apikey=" + MovieApp.api_key + "&t=" + title
+            try:
+                response = requests.get(url).json()
+            except MaxRetryError:
+                print('Houston, we have some connection problems! There is no Internet connection.')
+                try_again = input('Do you want to try again? y/N: ').strip().lower()
+                if try_again in ['yes', 'y']:
+                    continue
+                while True:
+                    manual_enter = input('Do you want to enter required data manually? Y/n: ').strip().lower()
+                    if manual_enter in ["", "y", "yes"]:
+                        return title, MovieApp.get_year(), MovieApp.get_rating(), MovieApp.get_poster()
+                    print('Better luck next time!')
+                    return None
+            if response['Response'] == 'False':
+                print(response['Error'])
+                continue
+            break
+        return title, response['Year'], response['imdbRating'], response['Poster']
 
     def run(self):
         """Populates function_list dictionary and calls dispatcher function
@@ -388,14 +413,15 @@ class MovieApp:
             """
         MovieApp.function_list['0. Exit'] = "exit_loop"
         MovieApp.function_list['1. List movies'] = self._command_list_movies
-        MovieApp.function_list['2. Add movie'] = self.add_movie
-        MovieApp.function_list['3. Delete movie'] = self.delete_movie
-        MovieApp.function_list['4. Update movie'] = self.update_movie
+        MovieApp.function_list['2. Add movie'] = self._add_movie
+        MovieApp.function_list['3. Delete movie'] = self._delete_movie
+        MovieApp.function_list['4. Update movie'] = self._update_movie
         MovieApp.function_list['5. Stats'] = self._command_movie_stats
-        MovieApp.function_list['6. Random movie'] = self.print_random_movie
-        MovieApp.function_list['7. Search movie'] = self.search_movie
-        MovieApp.function_list['8. Movies sorted by rating'] = self.print_sorted_by_rating
-        MovieApp.function_list['9. Movies sorted by year'] = self.print_sorted_by_year
-        MovieApp.function_list['10. Filter movies'] = self.filter_movies
+        MovieApp.function_list['6. Random movie'] = self._print_random_movie
+        MovieApp.function_list['7. Search movie'] = self._search_movie
+        MovieApp.function_list['8. Movies sorted by rating'] = self._print_sorted_by_rating
+        MovieApp.function_list['9. Movies sorted by year'] = self._print_sorted_by_year
+        MovieApp.function_list['10. Filter movies'] = self._filter_movies
         MovieApp.function_list['11. Generate a website'] = self._generate_website
+        MovieApp.function_list['12. Update movies info'] = self._update_movies_info
         MovieApp.dispatcher()

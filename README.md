@@ -10,7 +10,7 @@ User menu gives following options:
 1. **List movies** - *lists all movies from a database*
 2. **Add movie** - *adds a movie to a database*
 3. **Delete movie** - *deletes a movie from a database*
-4. **Update movie** - *rewrites movie rating to entered value*
+4. **Update movie** - *add or rewrite personal notes about a movie*
 5. **Stats** - *prints statistics of a database*
 6. **Random movie** - *suggests a random movie*
 7. **Search movie** - *search movie(s) in a database matching user search frase*
@@ -27,4 +27,4 @@ Install all required modules, get your own api on [OMDb API website](https://www
 
 ## How to use
 
-Run `main.py` file
+Run `main.py` file. You can also pass a data file as command line argument: `python3 main.py data/mike.json`

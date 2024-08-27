@@ -22,10 +22,10 @@ class IStorage(ABC):
         del movies[title]
         self.update_database(movies)
 
-    def update_movie(self, title, rating):
-        """Updates movie's rating"""
+    def update_movie(self, title, movie_notes):
+        """Updates movie's notes"""
         movies = self.list_movies()
-        movies[title]['rating'] = rating
+        movies[title]['notes'] = movie_notes
         self.update_database(movies)
 
     @abstractmethod

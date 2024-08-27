@@ -136,8 +136,12 @@ class MovieApp:
             except KeyError:
                 print(f'There is no movie called "{title}" in a database')
                 continue
-            rating = MovieApp.get_rating()
-            self._storage.update_movie(title, rating)
+            movie_notes = ""
+            while not movie_notes:
+                movie_notes = input('Enter movie notes: ').strip()
+                if not movie_notes:
+                    print('Movie notes can not be empty.')
+            self._storage.update_movie(title, movie_notes)
             print(f'Movie {title} updated successfully.')
             break
 
@@ -339,9 +343,11 @@ class MovieApp:
         return f'<{tag} {class_}>{content}</{tag}>'
 
     @staticmethod
-    def serialize_movie(title, year, rating, poster):
+    def serialize_movie(title, year, rating, poster, notes):
         """Serializes one movie, returns valid HTML markup for one move (list item)"""
         img = MovieApp.html_tag_wrap(poster, "img", "movie-poster")
+        if notes:
+            img = img.replace('<img', f'<img title="{notes}" ')
         movie_title = MovieApp.html_tag_wrap(title, "div", "movie-title")
         release_year = MovieApp.html_tag_wrap(year, "div", "movie-year")
         movie_html = MovieApp.html_tag_wrap(img + movie_title + release_year, "div", "movie")
@@ -352,7 +358,11 @@ class MovieApp:
         movies = self._storage.list_movies()
         movies_html_list_items = ""
         for title, info in movies.items():
-            movies_html_list_items += MovieApp.serialize_movie(title, info['year'], info['rating'], info['poster'])
+            movies_html_list_items += MovieApp.serialize_movie(title,
+                                                               info['year'],
+                                                               info['rating'],
+                                                               info['poster'],
+                                                               info.get('notes', ''))
         with open("_static/index_template.html", 'r') as handle:
             html_template = handle.read()
         with open('_static/index.html', 'w') as handle:
@@ -372,10 +382,9 @@ class MovieApp:
             rating = response['imdbRating']
             new_movies[title] = {'year': year,
                                  'rating': rating,
-                                 'poster': poster}
+                                 'poster': poster,
+                                 'notes': self._storage.list_movies()[title].get('notes', '')}
         self._storage.update_database(new_movies)
-        with open('new_movies.json', 'w') as handle:
-            handle.write(json.dumps(new_movies))
         print("All movies' info was updated successfully")
 
     @staticmethod

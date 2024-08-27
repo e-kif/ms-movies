@@ -10,8 +10,10 @@ def main():
     MovieApp and runs MovieApp
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('echo')
+    parser.add_argument('echo', nargs='?')
     filename_from_argument = parser.parse_args().echo
+    if not filename_from_argument:
+        filename_from_argument = ""
     if filename_from_argument.endswith('.csv'):
         storage = StorageCsv(filename_from_argument)
     elif filename_from_argument.endswith('.json'):

@@ -350,7 +350,12 @@ class MovieApp:
             img = img.replace('<img', f'<img title="{notes}" ')
         movie_title = MovieApp.html_tag_wrap(title, "div", "movie-title")
         release_year = MovieApp.html_tag_wrap(year, "div", "movie-year")
-        movie_html = MovieApp.html_tag_wrap(img + movie_title + release_year, "div", "movie")
+        rating_star = (f'<i style="left: {rating*10}%" class="fa-solid fa-star"></i>'
+                       f'<span style="left: {rating*10}%" class="ratings">{rating}</span>')
+        movie_rating = (MovieApp.html_tag_wrap(rating_star, "div", "movie-rating-bar")
+                        .replace('<div', '<div style="background: linear-gradient(#F2A766 0 0) 0/'
+                                         f'{rating*10}% no-repeat #F2D8C9;"'))
+        movie_html = MovieApp.html_tag_wrap(img + movie_title + release_year + movie_rating, "div", "movie")
         return MovieApp.html_tag_wrap(movie_html, "li")
 
     def _generate_website(self):

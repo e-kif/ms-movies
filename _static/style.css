@@ -57,3 +57,30 @@ body {
     transition: all .4s ease;
     cursor: pointer
 }
+
+.movie-rating-bar {
+  position: relative;
+  margin-top: 14px;
+  margin-bottom: 18px;
+  width: 100%;
+  height: 4px;
+  border-radius: 4px;
+}
+
+i.fa-solid {
+  position: absolute;
+  bottom : -14px;
+  font-family: FontAwesome;
+  color: #F2C288;
+  font-size: 38px;
+  transform: translateX(-50%);
+  font-style: normal;
+}
+
+.ratings {
+  display: inline-block;
+  position: relative;
+  bottom: 7px;
+  transform: translateX(-50%);
+  font-size: 12px;
+}

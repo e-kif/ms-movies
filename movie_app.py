@@ -108,8 +108,8 @@ class MovieApp:
         """Adds new movie to a database storage"""
         movie_info = MovieApp.get_movie_info()
         if movie_info:
-            title, year, rating, poster = movie_info
-            self._storage.add_movie(title, year, rating, poster)
+            title, year, rating, poster, imdb_id = movie_info
+            self._storage.add_movie(title, year, rating, poster, imdb_id)
 
     def _delete_movie(self):
         """Deletes a movie from a storage database
@@ -343,13 +343,16 @@ class MovieApp:
         return f'<{tag} {class_}>{content}</{tag}>'
 
     @staticmethod
-    def serialize_movie(title, year, rating, poster, notes):
+    def serialize_movie(title, year, rating, poster, notes, imdb_id):
         """Serializes one movie, returns valid HTML markup for one move (list item)"""
         img = MovieApp.html_tag_wrap(poster, "img", "movie-poster")
         if notes:
-            img = img.replace('<img', f'<img title="{notes}" ')
+            img = img.replace('<img',  f'<img title="{notes}" ')
+        img = (img.replace('<img', f'<a href="https://imdb.com/title/{imdb_id}" target="_blank"><img')
+               + '</a>')
         movie_title = MovieApp.html_tag_wrap(title, "div", "movie-title")
         release_year = MovieApp.html_tag_wrap(year, "div", "movie-year")
+        rating = float(rating) #  converting for valid HTML from JSON
         rating_star = (f'<i style="left: {rating*10}%" class="fa-solid fa-star"></i>'
                        f'<span style="left: {rating*10}%" class="ratings">{rating}</span>')
         movie_rating = (MovieApp.html_tag_wrap(rating_star, "div", "movie-rating-bar")
@@ -367,7 +370,8 @@ class MovieApp:
                                                                info['year'],
                                                                info['rating'],
                                                                info['poster'],
-                                                               info.get('notes', ''))
+                                                               info.get('notes', ''),
+                                                               info['imdb_id'])
         with open("_static/index_template.html", 'r') as handle:
             html_template = handle.read()
         with open('_static/index.html', 'w') as handle:
@@ -382,13 +386,11 @@ class MovieApp:
             url = "http://www.omdbapi.com/?apikey=" + MovieApp.api_key + "&t=" + title
             response = requests.get(url).json()
             print(f'Updating movie "{title}" info.')
-            year = response['Year']
-            poster = response['Poster']
-            rating = response['imdbRating']
-            new_movies[title] = {'year': year,
-                                 'rating': rating,
-                                 'poster': poster,
-                                 'notes': self._storage.list_movies()[title].get('notes', '')}
+            new_movies[title] = {'year': response['Year'],
+                                 'rating': response['imdbRating'],
+                                 'poster': response['Poster'],
+                                 'notes': self._storage.list_movies()[title].get('notes', ''),
+                                 'imdb_id': response['imdbID']}
         self._storage.update_database(new_movies)
         print("All movies' info was updated successfully")
 
@@ -402,6 +404,7 @@ class MovieApp:
             url = "http://www.omdbapi.com/?apikey=" + MovieApp.api_key + "&t=" + title
             try:
                 response = requests.get(url).json()
+                print(response)
             except requests.exceptions.ConnectionError:
                 print('Houston, we have some connection problems! There is no Internet connection.')
                 try_again = input('Do you want to try again? y/N: ').strip().lower()
@@ -417,7 +420,7 @@ class MovieApp:
                 print(response['Error'])
                 continue
             break
-        return title, response['Year'], response['imdbRating'], response['Poster']
+        return title, response['Year'], response['imdbRating'], response['Poster'], response['imdbID']
 
     def run(self):
         """Populates function_list dictionary and calls dispatcher function

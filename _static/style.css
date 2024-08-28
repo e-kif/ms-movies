@@ -55,7 +55,6 @@ body {
     width: 128px;
     height: 193px;
     transition: all .4s ease;
-    cursor: pointer
 }
 
 .movie-rating-bar {
@@ -82,5 +81,5 @@ i.fa-solid {
   position: relative;
   bottom: 7px;
   transform: translateX(-50%);
-  font-size: 12px;
+  font-size: 10px;
 }

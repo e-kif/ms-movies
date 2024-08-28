@@ -15,12 +15,13 @@ class StorageConvertor:
                 reader = csv.reader(handle)
                 self._storage = {}
                 for line in reader:
-                    title, year, rating, poster = tuple(line)
+                    title, year, rating, poster, notes = tuple(line)
                     year = int(year)
                     rating = float(rating)
                     self._storage[title] = {"year": year,
                                             "rating": rating,
-                                            "poster": poster}
+                                            "poster": poster,
+                                            "notes": notes}
 
     def save_database_as_csv(self, csv_file):
         """Saves database as a valid JSON file"""
@@ -40,6 +41,6 @@ class StorageConvertor:
         print(f'Movies database was saved to file {json_file} successfully.')
 
 
-sor = StorageConvertor('data.csv')
-# sor.save_database_as_csv('data.csv')
-sor.save_database_as_json('data2.json')
+sor = StorageConvertor('../data/data.json')
+sor.save_database_as_csv('../data/data.csv')
+# sor.save_database_as_json('data2.json')

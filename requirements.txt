@@ -5,3 +5,5 @@ random
 requests
 dotenv-python
 csv
+pycountry
+os

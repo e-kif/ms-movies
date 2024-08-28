@@ -15,23 +15,28 @@ class StorageConvertor:
                 reader = csv.reader(handle)
                 self._storage = {}
                 for line in reader:
-                    title, year, rating, poster, notes = tuple(line)
+                    title, year, rating, poster, notes, imdb_id, flag = tuple(line)
                     year = int(year)
                     rating = float(rating)
                     self._storage[title] = {"year": year,
                                             "rating": rating,
                                             "poster": poster,
-                                            "notes": notes}
+                                            "notes": notes,
+                                            "imdb_id": imdb_id,
+                                            "flag": flag}
 
     def save_database_as_csv(self, csv_file):
         """Saves database as a valid JSON file"""
         with open(csv_file, 'w') as handle:
-            handle.write('"title","year","rating","poster"')
+            handle.write('"title","year","rating","poster","notes","imdb_id","flag"')
             for title, info in self._storage.items():
                 year = info['year']
                 rating = info['rating']
                 poster = info.get('poster', '')
-                handle.write(f'\n"{title}",{year},{rating},"{poster}"')
+                notes = info.get('notes', '')
+                imdb_id = info.get('imdb_id', '')
+                flag = info.get('flag', '')
+                handle.write(f'\n"{title}",{year},{rating},"{poster}","{notes}","{imdb_id}","{flag}"')
         print(f'Movies database was save to file {csv_file} successfully.')
 
     def save_database_as_json(self, json_file):

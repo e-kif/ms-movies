@@ -7,13 +7,14 @@ class IStorage(ABC):
     def list_movies(self):
         pass
 
-    def add_movie(self, title, year, rating, poster, imdb_id=""):
+    def add_movie(self, title, year, rating, poster, imdb_id="", flag=""):
         """Reads movies database, adds one movie, saves new database to a csv file"""
         movies = self.list_movies()
         movies[title] = {"year": year,
                          "rating": rating,
                          "poster": poster,
-                         "imdb_id": imdb_id}
+                         "imdb_id": imdb_id,
+                         "flag": flag}
         self.update_database(movies)
         print(f'Movie "{title}" was added successfully')
 

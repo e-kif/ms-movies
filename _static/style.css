@@ -32,7 +32,17 @@ body {
 }
 
 .movie {
+  position: relative;
   width: 140px;
+}
+
+.flag {
+  position: absolute;
+  z-index: 10;
+  top: -8%;
+  left: -9%;
+  font-size: 32px;
+  text-shadow: 2px 2px 5px;
 }
 
 .movie-title,

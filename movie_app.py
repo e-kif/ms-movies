@@ -4,6 +4,7 @@ import datetime
 import random
 import requests
 import dotenv
+import pycountry
 
 
 class MovieApp:
@@ -108,8 +109,8 @@ class MovieApp:
         """Adds new movie to a database storage"""
         movie_info = MovieApp.get_movie_info()
         if movie_info:
-            title, year, rating, poster, imdb_id = movie_info
-            self._storage.add_movie(title, year, rating, poster, imdb_id)
+            title, year, rating, poster, imdb_id, flag = movie_info
+            self._storage.add_movie(title, year, rating, poster, imdb_id, flag)
 
     def _delete_movie(self):
         """Deletes a movie from a storage database
@@ -343,8 +344,9 @@ class MovieApp:
         return f'<{tag} {class_}>{content}</{tag}>'
 
     @staticmethod
-    def serialize_movie(title, year, rating, poster, notes, imdb_id):
+    def serialize_movie(title, year, rating, poster, notes, imdb_id, flag):
         """Serializes one movie, returns valid HTML markup for one move (list item)"""
+        country_flag = MovieApp.html_tag_wrap(flag, "div", "flag")
         img = MovieApp.html_tag_wrap(poster, "img", "movie-poster")
         if notes:
             img = img.replace('<img',  f'<img title="{notes}" ')
@@ -358,7 +360,8 @@ class MovieApp:
         movie_rating = (MovieApp.html_tag_wrap(rating_star, "div", "movie-rating-bar")
                         .replace('<div', '<div style="background: linear-gradient(#F2A766 0 0) 0/'
                                          f'{rating*10}% no-repeat #F2D8C9;"'))
-        movie_html = MovieApp.html_tag_wrap(img + movie_title + release_year + movie_rating, "div", "movie")
+        movie_html = MovieApp.html_tag_wrap(country_flag + img + movie_title + release_year
+                                            + movie_rating, "div", "movie")
         return MovieApp.html_tag_wrap(movie_html, "li")
 
     def _generate_website(self):
@@ -371,7 +374,8 @@ class MovieApp:
                                                                info['rating'],
                                                                info['poster'],
                                                                info.get('notes', ''),
-                                                               info['imdb_id'])
+                                                               info.get('imdb_id', ''),
+                                                               info.get('flag', ''))
         with open("_static/index_template.html", 'r') as handle:
             html_template = handle.read()
         with open('_static/index.html', 'w') as handle:
@@ -384,13 +388,19 @@ class MovieApp:
         new_movies = {}
         for title in self._storage.list_movies().keys():
             url = "http://www.omdbapi.com/?apikey=" + MovieApp.api_key + "&t=" + title
-            response = requests.get(url).json()
+            try:
+                response = requests.get(url).json()
+            except requests.exceptions.ConnectionError:
+                print('Houston, we have some connection problems. No internet connection.\n'
+                      "Try updating movies' information later")
+                return None
             print(f'Updating movie "{title}" info.')
             new_movies[title] = {'year': response['Year'],
                                  'rating': response['imdbRating'],
                                  'poster': response['Poster'],
                                  'notes': self._storage.list_movies()[title].get('notes', ''),
-                                 'imdb_id': response['imdbID']}
+                                 'imdb_id': response['imdbID'],
+                                 'flag': MovieApp.get_country_flag(response)}
         self._storage.update_database(new_movies)
         print("All movies' info was updated successfully")
 
@@ -404,7 +414,6 @@ class MovieApp:
             url = "http://www.omdbapi.com/?apikey=" + MovieApp.api_key + "&t=" + title
             try:
                 response = requests.get(url).json()
-                print(response)
             except requests.exceptions.ConnectionError:
                 print('Houston, we have some connection problems! There is no Internet connection.')
                 try_again = input('Do you want to try again? y/N: ').strip().lower()
@@ -420,7 +429,22 @@ class MovieApp:
                 print(response['Error'])
                 continue
             break
-        return title, response['Year'], response['imdbRating'], response['Poster'], response['imdbID']
+        return (title,
+                response['Year'],
+                response['imdbRating'],
+                response['Poster'],
+                response['imdbID'],
+                MovieApp.get_country_flag(response))
+
+    @staticmethod
+    def get_country_flag(response):
+        """Gets country flag emoji from api response or entered country as a string"""
+        if isinstance(response, str):
+            return pycountry.countries.get(name=response).flag
+        country = response['Country'].split(",")[0]
+        if country == 'Russia':
+            country = 'Russian Federation'
+        return pycountry.countries.get(name=country).flag
 
     def run(self):
         """Populates function_list dictionary and calls dispatcher function

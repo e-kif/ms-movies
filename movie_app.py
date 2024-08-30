@@ -71,7 +71,7 @@ class MovieApp:
         :return: string
         """
         while True:
-            user_input = input(f'Enter a link for the poster: ').strip()
+            user_input = input('Enter a link for the poster: ').strip()
             if not user_input:
                 print('Movie poster can not be empty')
                 continue
@@ -376,7 +376,7 @@ class MovieApp:
                                                                info.get('notes', ''),
                                                                info.get('imdb_id', ''),
                                                                info.get('flag', ''))
-        with open("_static/index_template.html", 'r') as handle:
+        with open("_static/index_template.html", 'r', encoding='utf-8') as handle:
             html_template = handle.read()
         with open('_static/index.html', 'w') as handle:
             handle.write(html_template.replace("__TEMPLATE_MOVIE_GRID__", movies_html_list_items)
